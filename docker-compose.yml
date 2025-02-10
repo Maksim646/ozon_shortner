@@ -1,0 +1,38 @@
+#version: '3.9'
+
+services:
+  ozon_shortner:
+    container_name: ozon_shortner
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: cmd/ozon_shortner/Dockerfile
+    environment:
+      - ADDR=8000
+      - LOG_LEVEL=DEBUG
+      - MIGRATIONS_DIR=/migrations
+      - POSTGRES_URI=postgres://postgres:ozon_shortner@postgres:5432/ozon_shortner_db?sslmode=disable
+      - DB_TYPE=inmemory
+      - TEST_POSTGRES_URI=postgres://postgres:ozon_shortner@localhost:5448/ozon_shortner_db_test?sslmode=disable
+
+    ports:
+      - 8206:8000
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14
+    restart: unless-stopped
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5448:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ozon_shortner_db
+      POSTGRES_PASSWORD: ozon_shortner
+
+volumes:
+  postgres:
+    driver: local
+

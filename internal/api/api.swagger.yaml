@@ -1,0 +1,134 @@
+swagger: '2.0'
+
+info:
+  title: Ozon Shrtner Backend Service
+  version: development
+  description: Ozon Shrtner WebSite Backend Service
+
+consumes:
+  - application/json
+
+produces:
+  - application/json
+
+paths:
+
+###LINKS
+  swagger: '2.0'
+
+info:
+  title: Ozon Shrtner Backend Service
+  version: development
+  description: Ozon Shrtner WebSite Backend Service
+
+consumes:
+  - application/json
+
+produces:
+  - application/json
+
+paths:
+  /shortner_link:
+    post:
+      summary: Create Short Link
+      operationId: CreateShortLink
+      tags:
+        - Link
+      parameters:
+        - name: OriginalLink
+          description: Create Short Link
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/OriginalLink'
+      responses:
+        200:
+          description: Create Short Link Response
+          schema:
+            $ref: '#/definitions/ShortLink'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /original_link:
+    get:
+      summary: Get Original Link
+      operationId: GetOriginalLink
+      tags:
+        - Link
+      parameters:
+        - name: ShortLink
+          description: Short Link
+          in: query
+          required: true
+          type: string
+      responses:
+        200:
+          description: Original Link Response
+          schema:
+            $ref: '#/definitions/OriginalLink'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  Error:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+
+  ShortLink:
+    type: object
+    required:
+      - short_link
+    properties:
+      short_link:
+        type: string
+
+  OriginalLink:
+    type: object
+    required:
+      - original_link
+    properties:
+      original_link:
+        type: string
+
+
+definitions:
+
+  Error:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  
+  ShortLink:
+    type: object
+    required:
+      - short_link
+    properties:
+      short_link:
+        type: string
+
+  OriginalLink:
+    type: object
+    required:
+      - original_link
+    properties:
+      original_link:
+        type: string

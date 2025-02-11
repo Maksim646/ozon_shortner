@@ -43,6 +43,7 @@ func (p *Migrator) Apply() error {
 	err = m.Up()
 	fmt.Println(err)
 	if err != nil {
+		fmt.Println(err)
 		if errors.Is(err, migrate.ErrNoChange) {
 			return nil
 		}

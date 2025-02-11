@@ -8,42 +8,61 @@ import (
 	"github.com/Maksim646/ozon_shortner/pkg/useful"
 )
 
-func (s *Suite) TestCreateShortLink_NoValidPass() {
-	paramsLink := operations.NewCreateShortLinkParams().WithOriginalLink(&definition.OriginalLink{
-		OriginalLink: useful.StrPtr("12345"),
-	})
+func (s *Suite) TestCreateShortLink() {
+	testCases := []struct {
+		name          string
+		originalLink  string
+		expectedError bool
+		expectedLen   int
+	}{
+		{
+			name:          "NoValidPass",
+			originalLink:  "12345",
+			expectedError: true,
+		},
+		{
+			name:          "Http_ValidPass",
+			originalLink:  "http://test/func/service.ru",
+			expectedError: false,
+			expectedLen:   10,
+		},
+		{
+			name:          "Https_ValidPass",
+			originalLink:  "https://test/func/service.ru",
+			expectedError: false,
+			expectedLen:   10,
+		},
+		{
+			name:          "EmptyOriginalLink",
+			originalLink:  "",
+			expectedError: true,
+		},
+		{
+			name:          "LongOriginalLink",
+			originalLink:  "https://" + strings.Repeat("a", 2049),
+			expectedError: false,
+			expectedLen:   10,
+		},
+	}
 
-	_, err := s.api.CreateShortLink(paramsLink)
-	s.Error(err)
-}
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			paramsLink := operations.NewCreateShortLinkParams().WithOriginalLink(&definition.OriginalLink{
+				OriginalLink: useful.StrPtr(tc.originalLink),
+			})
 
-func (s *Suite) TestCreateShortLink_Http_ValidPass() {
-	paramsLink := operations.NewCreateShortLinkParams().WithOriginalLink(&definition.OriginalLink{
-		OriginalLink: useful.StrPtr("http://test/func/service.ru"),
-	})
-	CreateShortLink, err := s.api.CreateShortLink(paramsLink)
-	s.NoError(err)
-	s.Equal(10, len(*CreateShortLink.Payload.ShortLink))
-}
+			createShortLink, err := s.api.CreateShortLink(paramsLink)
 
-func (s *Suite) TestCreateShortLink_Https_ValidPass() {
-	paramsLink := operations.NewCreateShortLinkParams().WithOriginalLink(&definition.OriginalLink{
-		OriginalLink: useful.StrPtr("https://test/func/service.ru"),
-	})
-	CreateShortLink, err := s.api.CreateShortLink(paramsLink)
-	s.NoError(err)
-
-	s.Equal(10, len(*CreateShortLink.Payload.ShortLink))
-
-}
-
-func (s *Suite) TestCreateShortLink_EmptyOriginalLink() {
-	paramsLink := operations.NewCreateShortLinkParams().WithOriginalLink(&definition.OriginalLink{
-		OriginalLink: useful.StrPtr(""),
-	})
-
-	_, err := s.api.CreateShortLink(paramsLink)
-	s.Error(err)
+			if tc.expectedError {
+				s.Error(err)
+			} else {
+				s.NoError(err)
+				if tc.expectedLen > 0 {
+					s.Len(*createShortLink.Payload.ShortLink, tc.expectedLen, "ShortLink length should be %d", tc.expectedLen)
+				}
+			}
+		})
+	}
 }
 
 func (s *Suite) TestCreateShortLink_DuplicateOriginalLink() {

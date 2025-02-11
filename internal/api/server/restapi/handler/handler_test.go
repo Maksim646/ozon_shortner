@@ -45,7 +45,7 @@ func (s *Suite) SetupSuite() {
 	zap.ReplaceGlobals(zaptest.NewLogger(s.T(), zaptest.WrapOptions(zap.AddCaller())))
 	s.Suite.SetupSuite("./../../../..")
 
-	linkRepo := _linkRepo.New(s.DB())
+	linkRepo := _linkRepo.New(s.DB(), 5*time.Minute)
 	linkUsecase := _linkUsecase.New(linkRepo)
 
 	source := rand.NewSource(time.Now().UnixNano())
@@ -70,7 +70,7 @@ func (s *Suite) SetupTest() {
 
 	s.Suite.SetupTest()
 
-	linkRepo := _linkRepo.New(s.DB())
+	linkRepo := _linkRepo.New(s.DB(), 5*time.Minute)
 	linkUsecase := _linkUsecase.New(linkRepo)
 
 	s.handler.linkUsecase = linkUsecase

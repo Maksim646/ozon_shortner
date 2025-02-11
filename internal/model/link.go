@@ -8,8 +8,6 @@ import (
 )
 
 const (
-	DefaultShortLinkLength = int64(10)
-
 	Https = "https"
 	Http  = "https"
 )

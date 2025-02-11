@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -90,7 +89,7 @@ func main() {
 
 		zap.L().Info("Database manage was process successfully")
 
-		linkRepoImpl := _linkRepo.New(sqalxConn)
+		linkRepoImpl := _linkRepo.New(sqalxConn, 5*time.Minute)
 		linkUsecase = _linkUsecase.New(linkRepoImpl)
 	case dbTypeInMemory:
 		zap.L().Info("Using In-Memory database")
@@ -111,7 +110,7 @@ func main() {
 
 	chain := alice.New(appHandler.WsMiddleware).Then(appHandler)
 	if chain == nil {
-		fmt.Println(chain)
+		log.Fatalf("Invalid middleware")
 	}
 	server := http.Server{
 		Handler: chain,
